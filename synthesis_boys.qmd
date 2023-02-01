@@ -1,0 +1,122 @@
+---
+title: "Synthesis"
+author: "Kyuri Park"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+format: 
+  html:
+    theme: Yeti
+    css: style.css
+    toc: true
+    smooth-scroll: true
+    number-sections: true
+    #code-fold: true
+    code-overflow: scroll
+    code-summary: "See code here."
+    embed-resources: true
+    highlight: tango
+    fig-responsive: true
+    code-block-bg: rgba(233,236,239,.65)
+editor: visual
+---
+
+```{r setup, include=FALSE}
+# chunk settings
+knitr::opts_chunk$set(
+   message = FALSE,
+   warning = FALSE,
+   comment = NA,
+   fig.align = "center")
+```
+
+```{r}
+#| label: prep
+
+# load libraries
+library(mice)
+library(purrr)
+library(dplyr)
+library(magrittr)
+library(kableExtra)
+
+# set the seed for reproducibility
+set.seed(123)    
+```
+
+# Synthesize `boys` data
+
+## `boys` data summary
+```{r}
+data(boys)
+skimr::skim(boys)
+```
+
+## Impute `boys` with m=1
+```{r}
+imputed_boys <- boys %>% mice(seed = 123, m = 1, print = FALSE) %>% complete()
+```
+
+## Synthesize `boys` 3 times
+```{r}
+# which method? CART? otherwise not working well?
+syn <- imputed_boys %>%  
+  mice(seed = 123, m =3, method="cart", where = matrix(TRUE, nrow=nrow(imputed_boys),
+  ncol=ncol(imputed_boys)), print=F) %>% complete("all")
+```
+
+## Evaluate models
+
+### True model estimates
+```{r}
+# true model (the imputed complete data)
+truemodel <- imputed_boys %$% lm(wgt ~ age + hgt)
+
+# extract the coefficients
+coefs <- coef(truemodel)
+
+broom::tidy(truemodel, conf.int=TRUE) %>%
+  mutate(CIW = conf.high - conf.low) %>% 
+  kable(digits = 3,
+        caption = "Results of a single linear regression model on the completed dataset.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+### Synthesized model estimates
+```{r}
+syn_fit <- syn %>%
+  map(function(x) x %$% lm(wgt ~ age + hgt) %>% summary) %>%
+  map_dfr(function(x) {
+    var      <- rownames(x$coefficients)
+    true_est <- coefs
+    est      <- x$coefficients[,1]
+    true_se  <- sqrt(diag(vcov(truemodel)))
+    se       <- x$coefficients[,2]
+    df       <- x$df[2]
+    lower    <- est + se * qt(.025, df)
+    upper    <- est + se * qt(.975, df)
+    cov      <- lower < coefs & coefs < upper
+    bind_cols(var = var, true_est = true_est, est = est, true_se = true_se, 
+              se = se, df = df, lower = lower, upper = upper, cov = cov)
+    })
+
+
+results <- syn_fit %>%
+   group_by(var) %>%
+   summarise("True Est" = unique(true_est),
+             "Syn Est"  = mean(est),
+             "Bias"     = mean(est - true_est),
+             "True SE"  = unique(true_se),
+             "Syn SE"   = mean(se),
+             "df"       = mean(df),
+             "Lower"    = mean(lower),
+             "Upper"    = mean(upper),
+             "CIW"      = mean(upper - lower),
+             "Coverage" = mean(cov))
+
+```
+
+
+```{r}
+results %>%
+  kable(digits = 3, caption = "Evaluation of the lm model based on the synthesized dataset.") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
