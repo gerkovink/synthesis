@@ -1,0 +1,126 @@
+---
+title: "Small simulation"
+format: 
+  html: 
+    toc: true
+---
+
+# Load required packages
+
+```{r warning=FALSE, message=FALSE}
+library(mice)
+library(dplyr)
+library(ggmice)
+library(magrittr)
+library(purrr)
+library(furrr)
+library(ggplot2)
+set.seed(123)
+```
+
+---
+
+# Outline *idea*
+If we assume that synthetic data generation went well[^1], then we would expect that any model would fit equally well if:
+
+1. calculated on the original (true) data, and validated on synthetic sets. 
+2. calculated on synthetic sets and validated on the original data. 
+
+[^1]: Well is a relatively ambiguous term. But I mean that the data would be suitable for a large set of candidate analysis models. Which is not necessarily cf. Rubin. 
+
+---
+
+# Outline simulation
+
+1. impute the `boys` data set with `m=1`
+2. synthesize the imputed `boys` data set `m=5` times. Use `meth = "cart"`.
+3. fit the model `lm(bmi ~ age + hgt + age:hgt + hc)` on the boys data set and on the synthetic sets independently. So 6 models. 
+4. Apply all 6 models to the remaining 5 data sets and see if you can correctly predict `bmi` from the model build on another data set. `6x5x4x3x2x1`
+5. calculate some interisting statistics. (mse/rmse? or any of the other prediction methods that predictors are always so fond of). 
+
+---
+
+# Impute boys to obtain comparative truth
+```{r}
+pred <- make.predictorMatrix(boys)
+meth <- make.method(boys)
+pred[c("hgt", "wgt"), "bmi"] <- 0
+meth["bmi"] <- "~ I(wgt/(hgt/100)^2)"
+imp <- mice(boys, 
+            m=1, 
+            maxit = 10,
+            pred = pred, 
+            meth = meth, 
+            print = FALSE)
+truth <- complete(imp)
+```
+
+
+---
+
+# Synthesize 
+
+```{r}
+syn <- mice(truth, 
+            meth = "cart", 
+            m = 5, 
+            maxit = 1, 
+            print = FALSE) %>% 
+  complete("all")
+```
+
+---
+
+# Fit models
+
+```{r}
+lm.truth <- truth %$% lm(bmi ~ age + hgt + age:hgt + hc)
+lm.syn <- syn %>% 
+  map(~.x %$% lm(bmi ~ age + hgt + age:hgt + hc))
+```
+
+---
+
+# Fit
+```{r}
+# add truth to the list of synthetic values
+full <- syn
+full$truth <- truth
+
+out <- list()
+for (i in 1:length(lm.syn)){
+  for(j in 1:length(full)){
+   out[[i]][[j]] <- predict(lm.syn[[i]], newdata = full[[j]])
+  }
+}
+
+# then compare the predictions
+# (overplot)plot the predictions or lm lines
+
+# define predict function
+cross_pred <- function(model, data){
+  data %>% 
+    map(~.x %>% predict(model))
+}
+
+apply_fun <- function(model){
+  
+}
+
+?map2
+
+lm.syn %>% 
+  map(~.x %>% 
+        lapply(predict(., newdata = data)))
+
+syn %>% lmap(predict(lm.syn[[1]]))
+model %>% 
+  map(~.x %>% 
+        map(~.x %>% predict(newdata = )cross_pred(model = ., data = full)
+```
+
+
+
+
+
+
