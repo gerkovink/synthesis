@@ -92,6 +92,7 @@ for (i in 1:length(lm.syn)){
   for(j in 1:length(full)){
    out[[i]][[j]] <- predict(lm.syn[[i]], newdata = full[[j]])
   }
+  
 }
 
 # then compare the predictions
@@ -117,6 +118,12 @@ syn %>% lmap(predict(lm.syn[[1]]))
 model %>% 
   map(~.x %>% 
         map(~.x %>% predict(newdata = )cross_pred(model = ., data = full)
+            
+            
+# Use pmap with expand.grid. Ask Thom or Hanne.           
+expand.grid(syn, lm.syn) %>% 
+  mutate(output = pmap(list(Var1, Var2), 
+                       function(x) predict(x$Var2, newdata = x$Var1)))
 ```
 
 
