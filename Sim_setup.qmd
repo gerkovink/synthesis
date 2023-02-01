@@ -120,7 +120,9 @@ model %>%
         map(~.x %>% predict(newdata = )cross_pred(model = ., data = full)
             
             
-# Use pmap with expand.grid. Ask Thom or Hanne.           
+# Use pmap with expand.grid. Ask Thom or Hanne. See also 
+#https://github.com/thomvolker/bes_master_thesis_ms/blob/main/scripts/01_sample_size_equal.R
+
 expand.grid(syn, lm.syn) %>% 
   mutate(output = pmap(list(Var1, Var2), 
                        function(x) predict(x$Var2, newdata = x$Var1)))
