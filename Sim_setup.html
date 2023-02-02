@@ -113,6 +113,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#outline-simulation" id="toc-outline-simulation" class="nav-link" data-scroll-target="#outline-simulation">Outline simulation</a></li>
   <li><a href="#impute-boys-to-obtain-comparative-truth" id="toc-impute-boys-to-obtain-comparative-truth" class="nav-link" data-scroll-target="#impute-boys-to-obtain-comparative-truth">Impute boys to obtain comparative truth</a></li>
   <li><a href="#synthesize" id="toc-synthesize" class="nav-link" data-scroll-target="#synthesize">Synthesize</a></li>
+  <li><a href="#fit-models" id="toc-fit-models" class="nav-link" data-scroll-target="#fit-models">Fit models</a></li>
+  <li><a href="#fit" id="toc-fit" class="nav-link" data-scroll-target="#fit">Fit</a></li>
+  <li><a href="#rmse" id="toc-rmse" class="nav-link" data-scroll-target="#rmse">RMSE</a></li>
   </ul>
 </nav>
 </div>
@@ -188,6 +191,210 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="synthesize" class="level1">
 <h1>Synthesize</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>syn <span class="ot">&lt;-</span> <span class="fu">mice</span>(truth, </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">meth =</span> <span class="st">"cart"</span>, </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">m =</span> <span class="dv">5</span>, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">maxit =</span> <span class="dv">1</span>, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">print =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">complete</span>(<span class="st">"all"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+</section>
+<section id="fit-models" class="level1">
+<h1>Fit models</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>lm.truth <span class="ot">&lt;-</span> truth <span class="sc">%$%</span> <span class="fu">lm</span>(bmi <span class="sc">~</span> age <span class="sc">+</span> hgt <span class="sc">+</span> age<span class="sc">:</span>hgt <span class="sc">+</span> hc)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>lm.syn <span class="ot">&lt;-</span> syn <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(bmi <span class="sc">~</span> age <span class="sc">+</span> hgt <span class="sc">+</span> age<span class="sc">:</span>hgt <span class="sc">+</span> hc)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setNames</span>(<span class="fu">paste0</span>(<span class="st">"syn"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+</section>
+<section id="fit" class="level1">
+<h1>Fit</h1>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add truth to the list of synthetic values</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>full <span class="ot">&lt;-</span> syn <span class="sc">%&gt;%</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">append</span>(<span class="fu">list</span>(truth)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setNames</span>(<span class="fu">c</span>(<span class="fu">paste0</span>(<span class="st">"syn"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="st">"truth"</span>))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># extract bmi values  - bmis are all the same?</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>bmis <span class="ot">&lt;-</span> syn <span class="sc">%&gt;%</span> </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span> .x<span class="sc">$</span>bmi</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">append</span>(<span class="fu">list</span>(truth<span class="sc">$</span>bmi)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setNames</span>(<span class="fu">c</span>(<span class="fu">paste0</span>(<span class="st">"syn"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="st">"truth"</span>))</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># then compare the predictions</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(full, lm.syn) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">predicted =</span> <span class="fu">pmap</span>(<span class="fu">list</span>(Var1, Var2), </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                       <span class="cf">function</span>(Var1, Var2) <span class="fu">unname</span>(<span class="fu">predict</span>(Var2, <span class="at">newdata =</span> Var1)))) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">original =</span> <span class="fu">rep</span>(bmis, <span class="dv">5</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">set_rownames</span>(<span class="fu">paste</span>(<span class="st">"syn"</span>, <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="at">each=</span><span class="dv">6</span>), <span class="st">"- predicted:"</span>, <span class="fu">names</span>(.<span class="sc">$</span>predicted))) </span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the predictions against original values of bmi</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>plots1 <span class="ot">&lt;-</span> res <span class="sc">%&gt;%</span> </span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">apply</span>(<span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">data.frame</span>(<span class="at">predicted =</span> <span class="fu">unlist</span>(x<span class="sc">$</span>predicted), <span class="at">original =</span> <span class="fu">unlist</span>(x<span class="sc">$</span>original))) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">imap</span>(<span class="sc">~</span><span class="fu">ggplot</span>(.x, <span class="fu">aes</span>(<span class="at">x =</span> original, <span class="at">y =</span> predicted)) <span class="sc">+</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_point</span>(<span class="at">col=</span><span class="st">"skyblue"</span>, <span class="at">alpha =</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">"#000099"</span>, <span class="at">lty=</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        <span class="fu">labs</span>(<span class="at">subtitle =</span> .y) <span class="sc">+</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme_classic</span>()</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co"># combine six random plots - look all the same?</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(<span class="at">plotlist =</span> <span class="fu">sample</span>(plots1, <span class="dv">6</span>) , <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Sim_setup_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="rmse" class="level1">
+<h1>RMSE</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> res <span class="sc">%&gt;%</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">apply</span>(<span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">data.frame</span>(<span class="at">predicted =</span> <span class="fu">unlist</span>(x<span class="sc">$</span>predicted), <span class="at">original =</span> <span class="fu">unlist</span>(x<span class="sc">$</span>original))) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((.x<span class="sc">$</span>predicted <span class="sc">-</span> .x<span class="sc">$</span>original)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">%&gt;%</span> <span class="fu">unlist</span>()</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>rmse <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names=</span><span class="st">"RMSE"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">syn 1 - predicted: syn1</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 1 - predicted: syn2</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 1 - predicted: syn3</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 1 - predicted: syn4</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 1 - predicted: syn5</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 1 - predicted: truth</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 2 - predicted: syn1</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 2 - predicted: syn2</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 2 - predicted: syn3</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 2 - predicted: syn4</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 2 - predicted: syn5</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 2 - predicted: truth</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 3 - predicted: syn1</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 3 - predicted: syn2</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 3 - predicted: syn3</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 3 - predicted: syn4</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 3 - predicted: syn5</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 3 - predicted: truth</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 4 - predicted: syn1</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 4 - predicted: syn2</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 4 - predicted: syn3</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 4 - predicted: syn4</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 4 - predicted: syn5</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 4 - predicted: truth</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 5 - predicted: syn1</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 5 - predicted: syn2</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 5 - predicted: syn3</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 5 - predicted: syn4</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">syn 5 - predicted: syn5</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">syn 5 - predicted: truth</td>
+<td style="text-align: right;">2.051743</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </section>
 
 

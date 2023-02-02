@@ -41,6 +41,7 @@ If we assume that synthetic data generation went well[^1], then we would expect 
 ---
 
 # Impute boys to obtain comparative truth
+
 ```{r}
 pred <- make.predictorMatrix(boys)
 meth <- make.method(boys)
@@ -76,59 +77,63 @@ syn <- mice(truth,
 ```{r}
 lm.truth <- truth %$% lm(bmi ~ age + hgt + age:hgt + hc)
 lm.syn <- syn %>% 
-  map(~.x %$% lm(bmi ~ age + hgt + age:hgt + hc))
+  map(~.x %$% lm(bmi ~ age + hgt + age:hgt + hc)) %>% 
+    setNames(paste0("syn", 1:5))
+
 ```
 
 ---
 
 # Fit
-```{r}
-# add truth to the list of synthetic values
-full <- syn
-full$truth <- truth
 
-out <- list()
-for (i in 1:length(lm.syn)){
-  for(j in 1:length(full)){
-   out[[i]][[j]] <- predict(lm.syn[[i]], newdata = full[[j]])
-  }
-  
-}
+```{r}
+#| fig-width: 8
+#| fig-height: 5
+#| fig.align: center
+
+
+# add truth to the list of synthetic values
+full <- syn %>% 
+  append(list(truth)) %>% 
+  setNames(c(paste0("syn", 1:5), "truth"))
+
+# extract bmi values  - bmis are all the same?
+bmis <- syn %>% 
+  map(~ .x$bmi
+        ) %>% 
+  append(list(truth$bmi)) %>% 
+  setNames(c(paste0("syn", 1:5), "truth"))
 
 # then compare the predictions
-# (overplot)plot the predictions or lm lines
+res <- expand.grid(full, lm.syn) %>% 
+  transmute(predicted = pmap(list(Var1, Var2), 
+                       function(Var1, Var2) unname(predict(Var2, newdata = Var1)))) %>% 
+  mutate(original = rep(bmis, 5)) %>% 
+    set_rownames(paste("syn", rep(1:5,each=6), "- predicted:", names(.$predicted))) 
 
-# define predict function
-cross_pred <- function(model, data){
-  data %>% 
-    map(~.x %>% predict(model))
-}
-
-apply_fun <- function(model){
-  
-}
-
-?map2
-
-lm.syn %>% 
-  map(~.x %>% 
-        lapply(predict(., newdata = data)))
-
-syn %>% lmap(predict(lm.syn[[1]]))
-model %>% 
-  map(~.x %>% 
-        map(~.x %>% predict(newdata = )cross_pred(model = ., data = full)
-            
-            
-# Use pmap with expand.grid. Ask Thom or Hanne. See also 
-#https://github.com/thomvolker/bes_master_thesis_ms/blob/main/scripts/01_sample_size_equal.R
-
-expand.grid(syn, lm.syn) %>% 
-  mutate(output = pmap(list(Var1, Var2), 
-                       function(x) predict(x$Var2, newdata = x$Var1)))
+# plot the predictions against original values of bmi
+plots1 <- res %>% 
+  apply(1, function(x) data.frame(predicted = unlist(x$predicted), original = unlist(x$original))) %>% 
+  imap(~ggplot(.x, aes(x = original, y = predicted)) +
+        geom_point(col="skyblue", alpha =0.5) +
+        geom_abline(intercept = 0, slope = 1, col = "#000099", lty=2) + 
+        labs(subtitle = .y) +
+        theme_classic()
+        )
+# combine six random plots - look all the same?
+ggpubr::ggarrange(plotlist = sample(plots1, 6) , nrow = 2, ncol=3)
 ```
 
+# RMSE
 
+```{r}
+rmse <- res %>% 
+  apply(1, function(x) data.frame(predicted = unlist(x$predicted), original = unlist(x$original))) %>% 
+  map(~ sqrt(mean((.x$predicted - .x$original)^2))
+        ) %>% unlist()
+
+rmse %>% knitr::kable(col.names="RMSE") 
+```
 
 
 
