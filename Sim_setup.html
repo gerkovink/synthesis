@@ -148,7 +148,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(purrr)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <hr>
 </section>
@@ -168,7 +169,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>synthesize the imputed <code>boys</code> data set <code>m=5</code> times. Use <code>meth = "cart"</code>.</li>
 <li>fit the model <code>lm(bmi ~ age + hgt + age:hgt + hc)</code> on the boys data set and on the synthetic sets independently. So 6 models.</li>
 <li>Apply all 6 models to the remaining 5 data sets and see if you can correctly predict <code>bmi</code> from the model build on another data set. <code>6x5x4x3x2x1</code></li>
-<li>calculate some interisting statistics. (mse/rmse? or any of the other prediction methods that predictors are always so fond of).</li>
+<li>calculate some interesting statistics. (mse/rmse? or any of the other prediction methods that predictors are always so fond of).</li>
 </ol>
 <hr>
 </section>
@@ -196,8 +197,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">meth =</span> <span class="st">"cart"</span>, </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">m =</span> <span class="dv">5</span>, </span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">maxit =</span> <span class="dv">1</span>, </span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">print =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">complete</span>(<span class="st">"all"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">print =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">where =</span> <span class="fu">matrix</span>(<span class="cn">TRUE</span>, <span class="fu">nrow</span>(truth), <span class="fu">ncol</span>(truth))) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">complete</span>(<span class="st">"all"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <hr>
 </section>
@@ -252,6 +254,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </div>
+<hr>
 </section>
 <section id="rmse" class="level1">
 <h1>RMSE</h1>
@@ -273,123 +276,123 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">syn 1 - predicted: syn1</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.008907</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 1 - predicted: syn2</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">1.986720</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 1 - predicted: syn3</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.028691</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 1 - predicted: syn4</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.025933</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 1 - predicted: syn5</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.083531</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 1 - predicted: truth</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.057735</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 2 - predicted: syn1</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.012995</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 2 - predicted: syn2</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">1.982348</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 2 - predicted: syn3</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.033170</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 2 - predicted: syn4</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.026513</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 2 - predicted: syn5</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.078518</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 2 - predicted: truth</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.065021</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 3 - predicted: syn1</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.010499</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 3 - predicted: syn2</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">1.988632</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 3 - predicted: syn3</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.026951</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 3 - predicted: syn4</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.031029</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 3 - predicted: syn5</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.083731</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 3 - predicted: truth</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.062000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 4 - predicted: syn1</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.013040</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 4 - predicted: syn2</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">1.987239</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 4 - predicted: syn3</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.036790</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 4 - predicted: syn4</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.021892</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 4 - predicted: syn5</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.083382</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 4 - predicted: truth</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.058596</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 5 - predicted: syn1</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.015915</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 5 - predicted: syn2</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">1.984572</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 5 - predicted: syn3</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.033939</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 5 - predicted: syn4</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.028438</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 5 - predicted: syn5</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.076503</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 5 - predicted: truth</td>
-<td style="text-align: right;">2.051743</td>
+<td style="text-align: right;">2.070594</td>
 </tr>
 </tbody>
 </table>

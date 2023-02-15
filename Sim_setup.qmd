@@ -15,6 +15,7 @@ library(magrittr)
 library(purrr)
 library(furrr)
 library(ggplot2)
+
 set.seed(123)
 ```
 
@@ -36,7 +37,7 @@ If we assume that synthetic data generation went well[^1], then we would expect 
 2. synthesize the imputed `boys` data set `m=5` times. Use `meth = "cart"`.
 3. fit the model `lm(bmi ~ age + hgt + age:hgt + hc)` on the boys data set and on the synthetic sets independently. So 6 models. 
 4. Apply all 6 models to the remaining 5 data sets and see if you can correctly predict `bmi` from the model build on another data set. `6x5x4x3x2x1`
-5. calculate some interisting statistics. (mse/rmse? or any of the other prediction methods that predictors are always so fond of). 
+5. calculate some interesting statistics. (mse/rmse? or any of the other prediction methods that predictors are always so fond of). 
 
 ---
 
@@ -66,7 +67,8 @@ syn <- mice(truth,
             meth = "cart", 
             m = 5, 
             maxit = 1, 
-            print = FALSE) %>% 
+            print = FALSE,
+            where = matrix(TRUE, nrow(truth), ncol(truth))) %>% 
   complete("all")
 ```
 
@@ -90,7 +92,6 @@ lm.syn <- syn %>%
 #| fig-width: 8
 #| fig-height: 5
 #| fig.align: center
-
 
 # add truth to the list of synthetic values
 full <- syn %>% 
@@ -123,6 +124,8 @@ plots1 <- res %>%
 # combine six random plots - look all the same?
 ggpubr::ggarrange(plotlist = sample(plots1, 6) , nrow = 2, ncol=3)
 ```
+
+---
 
 # RMSE
 
