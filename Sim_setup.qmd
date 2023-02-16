@@ -5,6 +5,22 @@ format:
     toc: true
 ---
 
+```{r setup}
+#| include: false
+#| results: hide
+
+# chunk settings
+knitr::opts_chunk$set(
+   message = FALSE,
+   warning = FALSE,
+   comment = NA,
+   fig.align = "center")
+
+# suppress ggplot warnings
+options(warn = -1) 
+```
+
+
 # Load required packages
 
 ```{r warning=FALSE, message=FALSE}
@@ -86,19 +102,25 @@ lm.syn <- syn %>%
 
 ---
 
-# Fit
+# Predicted vs. Original 
 
+::: {.panel-tabset}
+
+## syn1
 ```{r}
-#| fig-width: 8
-#| fig-height: 5
+#| code-fold: true
+#| layout-ncol: 2
 #| fig.align: center
+#| results: hide
+#| fig-width: 4
+#| fig-height: 4
 
 # add truth to the list of synthetic values
 full <- syn %>% 
   append(list(truth)) %>% 
   setNames(c(paste0("syn", 1:5), "truth"))
 
-# extract bmi values  - bmis are all the same?
+# extract bmi values
 bmis <- syn %>% 
   map(~ .x$bmi
         ) %>% 
@@ -121,8 +143,87 @@ plots1 <- res %>%
         labs(subtitle = .y) +
         theme_classic()
         )
-# combine six random plots - look all the same?
-ggpubr::ggarrange(plotlist = sample(plots1, 6) , nrow = 2, ncol=3)
+
+plots1[stringr::str_detect(names(plots1), "syn 1")]
+# # combine six random plots 
+# ggpubr::ggarrange(plotlist = sample(plots1, 6) , nrow = 2, ncol=3)
+```
+
+## syn2
+```{r}
+#| code-fold: true
+#| layout-ncol: 2
+#| fig.align: center
+#| results: hide
+#| fig-width: 4
+#| fig-height: 4
+
+plots1[stringr::str_detect(names(plots1), "syn 2")]
+```
+
+## syn3
+```{r}
+#| code-fold: true
+#| layout-ncol: 2
+#| fig.align: center
+#| results: hide
+#| fig-width: 4
+#| fig-height: 4
+
+plots1[stringr::str_detect(names(plots1), "syn 3")]
+```
+
+## syn4
+```{r}
+#| code-fold: true
+#| layout-ncol: 2
+#| fig.align: center
+#| results: hide
+#| fig-width: 4
+#| fig-height: 4
+
+plots1[stringr::str_detect(names(plots1), "syn 4")]
+```
+
+## syn5
+```{r}
+#| code-fold: true
+#| layout-ncol: 2
+#| fig.align: center
+#| results: hide
+#| fig-width: 4
+#| fig-height: 4
+
+plots1[stringr::str_detect(names(plots1), "syn 5")]
+```
+
+:::
+
+
+# LM plots
+```{r}
+#| fig.align: center
+#| fig.width: 5.5
+#| layout-ncol: 2
+
+
+# source the plotting function
+source("fnc.R")
+
+# example plot 1
+synplot(full, bmi~age)
+
+# example plot 2
+synplot(full, age ~ hgt)
+
+# example plot 3
+synplot(full, age ~ hc)
+
+# example plot 4
+synplot(syn, age ~ wgt)
+
+# example plot 5
+synplot(list(full$syn1, full$syn3, full$truth), bmi ~ age)
 ```
 
 ---
@@ -136,6 +237,7 @@ rmse <- res %>%
         ) %>% unlist()
 
 rmse %>% knitr::kable(col.names="RMSE") 
+
 ```
 
 
