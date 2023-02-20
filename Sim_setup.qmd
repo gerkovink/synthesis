@@ -134,15 +134,28 @@ res <- expand.grid(full, lm.syn) %>%
   mutate(original = rep(bmis, 5)) %>% 
     set_rownames(paste("syn", rep(1:5,each=6), "- predicted:", names(.$predicted))) 
 
+# (do I want to specify the x-lim/y-lim on their min/max values?)
+res %>% 
+  tidyr::unnest(c(predicted, original)) %>%  
+  summarize_all(list(min, max))
+  
+
 # plot the predictions against original values of bmi
 plots1 <- res %>% 
-  apply(1, function(x) data.frame(predicted = unlist(x$predicted), original = unlist(x$original))) %>% 
-  imap(~ggplot(.x, aes(x = original, y = predicted)) +
-        geom_point(col="skyblue", alpha =0.5) +
-        geom_abline(intercept = 0, slope = 1, col = "#000099", lty=2) + 
-        labs(subtitle = .y) +
-        theme_classic()
-        )
+  apply(1, function(x) data.frame(predicted = unlist(x$predicted), original = unlist(x$original))) %>%
+  imap(
+    ~ggplot(.x, aes(x = original, y = predicted)) +
+      geom_point(col="skyblue", alpha =0.5) +
+      geom_abline(intercept = 0, slope = 1, col = "#000099", lty=2) + 
+      labs(subtitle = .y) +
+      # set the y/x-lims?
+      # ylim(min(.x$predicted), max(.x$predicted)) + 
+      # xlim(min(.x$original), max(.x$original)) +
+      ylim(13, 25) +  # min(res) & max(res)
+      xlim(11, 32) +
+      theme_classic()
+  )
+
 
 plots1[stringr::str_detect(names(plots1), "syn 1")]
 # # combine six random plots 
@@ -242,4 +255,7 @@ rmse %>% knitr::kable(col.names="RMSE")
 
 
 
+```{r}
+sessionInfo()
+```
 
