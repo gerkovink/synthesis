@@ -5,6 +5,22 @@ format:
     toc: true
 ---
 
+```{r setup}
+#| include: false
+#| results: hide
+
+# chunk settings
+knitr::opts_chunk$set(
+   message = FALSE,
+   warning = FALSE,
+   comment = NA,
+   fig.align = "center")
+
+# suppress ggplot warnings
+options(warn = -1) 
+```
+
+
 # Load required packages
 
 ```{r warning=FALSE, message=FALSE}
@@ -15,6 +31,7 @@ library(magrittr)
 library(purrr)
 library(furrr)
 library(ggplot2)
+
 set.seed(123)
 ```
 
@@ -36,11 +53,12 @@ If we assume that synthetic data generation went well[^1], then we would expect 
 2. synthesize the imputed `boys` data set `m=5` times. Use `meth = "cart"`.
 3. fit the model `lm(bmi ~ age + hgt + age:hgt + hc)` on the boys data set and on the synthetic sets independently. So 6 models. 
 4. Apply all 6 models to the remaining 5 data sets and see if you can correctly predict `bmi` from the model build on another data set. `6x5x4x3x2x1`
-5. calculate some interisting statistics. (mse/rmse? or any of the other prediction methods that predictors are always so fond of). 
+5. calculate some interesting statistics. (mse/rmse? or any of the other prediction methods that predictors are always so fond of). 
 
 ---
 
 # Impute boys to obtain comparative truth
+
 ```{r}
 pred <- make.predictorMatrix(boys)
 meth <- make.method(boys)
@@ -65,7 +83,8 @@ syn <- mice(truth,
             meth = "cart", 
             m = 5, 
             maxit = 1, 
-            print = FALSE) %>% 
+            print = FALSE,
+            where = matrix(TRUE, nrow(truth), ncol(truth))) %>% 
   complete("all")
 ```
 
@@ -76,60 +95,167 @@ syn <- mice(truth,
 ```{r}
 lm.truth <- truth %$% lm(bmi ~ age + hgt + age:hgt + hc)
 lm.syn <- syn %>% 
-  map(~.x %$% lm(bmi ~ age + hgt + age:hgt + hc))
+  map(~.x %$% lm(bmi ~ age + hgt + age:hgt + hc)) %>% 
+    setNames(paste0("syn", 1:5))
+
 ```
 
 ---
 
-# Fit
-```{r}
-# add truth to the list of synthetic values
-full <- syn
-full$truth <- truth
+# Predicted vs. Original 
 
-out <- list()
-for (i in 1:length(lm.syn)){
-  for(j in 1:length(full)){
-   out[[i]][[j]] <- predict(lm.syn[[i]], newdata = full[[j]])
-  }
-  
-}
+::: {.panel-tabset}
+
+## syn1
+```{r}
+#| code-fold: true
+#| layout-ncol: 2
+#| fig.align: center
+#| results: hide
+#| fig-width: 4
+#| fig-height: 4
+
+# add truth to the list of synthetic values
+full <- syn %>% 
+  append(list(truth)) %>% 
+  setNames(c(paste0("syn", 1:5), "truth"))
+
+# extract bmi values
+bmis <- syn %>% 
+  map(~ .x$bmi
+        ) %>% 
+  append(list(truth$bmi)) %>% 
+  setNames(c(paste0("syn", 1:5), "truth"))
 
 # then compare the predictions
-# (overplot)plot the predictions or lm lines
+res <- expand.grid(full, lm.syn) %>% 
+  transmute(predicted = pmap(list(Var1, Var2), 
+                       function(Var1, Var2) unname(predict(Var2, newdata = Var1)))) %>% 
+  mutate(original = rep(bmis, 5)) %>% 
+    set_rownames(paste("syn", rep(1:5,each=6), "- predicted:", names(.$predicted))) 
 
-# define predict function
-cross_pred <- function(model, data){
-  data %>% 
-    map(~.x %>% predict(model))
-}
-
-apply_fun <- function(model){
+# (do I want to specify the x-lim/y-lim on their min/max values?)
+res %>% 
+  tidyr::unnest(c(predicted, original)) %>%  
+  summarize_all(list(min, max))
   
-}
 
-?map2
+# plot the predictions against original values of bmi
+plots1 <- res %>% 
+  apply(1, function(x) data.frame(predicted = unlist(x$predicted), original = unlist(x$original))) %>%
+  imap(
+    ~ggplot(.x, aes(x = original, y = predicted)) +
+      geom_point(col="skyblue", alpha =0.5) +
+      geom_abline(intercept = 0, slope = 1, col = "#000099", lty=2) + 
+      labs(subtitle = .y) +
+      # set the y/x-lims?
+      # ylim(min(.x$predicted), max(.x$predicted)) + 
+      # xlim(min(.x$original), max(.x$original)) +
+      ylim(13, 25) +  # min(res) & max(res)
+      xlim(11, 32) +
+      theme_classic()
+  )
 
-lm.syn %>% 
-  map(~.x %>% 
-        lapply(predict(., newdata = data)))
 
-syn %>% lmap(predict(lm.syn[[1]]))
-model %>% 
-  map(~.x %>% 
-        map(~.x %>% predict(newdata = )cross_pred(model = ., data = full)
-            
-            
-# Use pmap with expand.grid. Ask Thom or Hanne. See also 
-#https://github.com/thomvolker/bes_master_thesis_ms/blob/main/scripts/01_sample_size_equal.R
+plots1[stringr::str_detect(names(plots1), "syn 1")]
+# # combine six random plots 
+# ggpubr::ggarrange(plotlist = sample(plots1, 6) , nrow = 2, ncol=3)
+```
 
-expand.grid(syn, lm.syn) %>% 
-  mutate(output = pmap(list(Var1, Var2), 
-                       function(x) predict(x$Var2, newdata = x$Var1)))
+## syn2
+```{r}
+#| code-fold: true
+#| layout-ncol: 2
+#| fig.align: center
+#| results: hide
+#| fig-width: 4
+#| fig-height: 4
+
+plots1[stringr::str_detect(names(plots1), "syn 2")]
+```
+
+## syn3
+```{r}
+#| code-fold: true
+#| layout-ncol: 2
+#| fig.align: center
+#| results: hide
+#| fig-width: 4
+#| fig-height: 4
+
+plots1[stringr::str_detect(names(plots1), "syn 3")]
+```
+
+## syn4
+```{r}
+#| code-fold: true
+#| layout-ncol: 2
+#| fig.align: center
+#| results: hide
+#| fig-width: 4
+#| fig-height: 4
+
+plots1[stringr::str_detect(names(plots1), "syn 4")]
+```
+
+## syn5
+```{r}
+#| code-fold: true
+#| layout-ncol: 2
+#| fig.align: center
+#| results: hide
+#| fig-width: 4
+#| fig-height: 4
+
+plots1[stringr::str_detect(names(plots1), "syn 5")]
+```
+
+:::
+
+
+# LM plots
+```{r}
+#| fig.align: center
+#| fig.width: 5.5
+#| layout-ncol: 2
+
+
+# source the plotting function
+source("fnc.R")
+
+# example plot 1
+synplot(full, bmi~age)
+
+# example plot 2
+synplot(full, age ~ hgt)
+
+# example plot 3
+synplot(full, age ~ hc)
+
+# example plot 4
+synplot(syn, age ~ wgt)
+
+# example plot 5
+synplot(list(full$syn1, full$syn3, full$truth), bmi ~ age)
+```
+
+---
+
+# RMSE
+
+```{r}
+rmse <- res %>% 
+  apply(1, function(x) data.frame(predicted = unlist(x$predicted), original = unlist(x$original))) %>% 
+  map(~ sqrt(mean((.x$predicted - .x$original)^2))
+        ) %>% unlist()
+
+rmse %>% knitr::kable(col.names="RMSE") 
+
 ```
 
 
 
-
-
+```{r}
+sessionInfo()
+```
 
