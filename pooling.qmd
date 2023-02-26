@@ -1,0 +1,67 @@
+---
+title: "New sim set up"
+bibliography: bibliography.bib
+link-citations: true
+format: 
+  html:  
+    toc: true
+---
+
+# Pooling theory definition
+
+@rubi87 [p.76] defined $Q$ as the quantity of interest (possibly a vector) after multiple imputation and $U$ as its variance. With multiple imputation, $m$ complete data estimates can be averaged as
+$$\bar{Q}=\frac{1}{m}\sum^{m}_{l=1}{ \hat{Q}}_{l},$$
+
+where $\hat Q_l$ is an estimate of $Q$ from the $l$-th imputed
+data set. Let $\bar U_l$ be the estimated variance-covariance matrix of
+$\hat Q_l$. The complete data variances of $Q$ can be combined by
+
+$$\bar{U}=\frac{1}{m}\sum^{m}_{l=1}{ {\bar U}}_{l}.$$
+The variance between the complete data estimates can be calculated as
+
+$$B=\frac{1}{m-1}\sum^{m}_{l=1}(\hat{ Q}_l-\bar{Q})^\prime(\hat{ Q}_l-\bar{Q}).$$
+
+The total variance of $({ Q}-\bar{Q})$ is defined as 
+
+$$T=\bar{U}+B+B/m.$$
+---
+
+# Problem statement
+
+- Scenario A: Not all data are observed and we impute the missing values with multiple imputation (e.g. mice.impute.norm). When we pool the $m$ multiple imputations cf. Rubin (1987, p. 76) - see above - we obtain valid inferences: Coverages are good -> confidence valid cf. @neym34, meaning that at least 95 out of 100 CI's cover the true [population] value and estimates are generally unbiased. 
+- Scenario B: All data are observed and we overimpute the data to generate synthetic sets. When we pool the $m$ synthetic sets cf. @reiter2003, we obtain valid inferences: Coverages are good -> confidence valid cf. @neym34, meaning that at least 95 out of 100 CI's cover the true [population] value and estimates are generally unbiased. In Reiter's rules, the total variance $T$ is defined as
+
+$$T=\bar{U}+B/m.$$ 
+
+and the calculation of the degrees of freedom is slightly different. See e.g. `mice:::pool.fitlist` under `if (rule == "reiter2003")`:
+
+```{r}
+mice:::pool.fitlist
+```
+
+- Scenario C: A combination of both: Some cells are missing and are imputed. The resulting completed data is then synthesized, except with `mice` we can do this in a single step. The pooling rules for $T$ are unknown. 
+
+---
+
+# What to do
+Simulate all three scenarios on a multivariate normal model. Use model-based simulation cf. @vink_sim22 which can be found [here](https://www.gerkovink.com/simulate/) with all code on [`GitHub`](https://github.com/gerkovink/simulate). 
+
+- The three above scenarios
+- 100 simulations each
+- mimic the simulation scenario in @vink_sim22 outlined in [section `Model-based simulation`](https://www.gerkovink.com/simulate/#model-based-simulation)
+- create the missingness in scenarios A and C with `mice::ampute()`, see [@ampute] as MCAR with 50 percent of rows having missingness.
+- Calculate bias, confidence interval width and coverage rate of the confidence interval. 
+- use both Rubin's rules and Reiter's rules for all scenarios.
+
+TIP: You can recycle most of the code in @vink_sim22
+
+---
+
+## Expectation
+1. Rubin's rules for scenario A correct ($\geq 95\%$); Reiter's rules undercover ($\leq 90\%$). 
+2. Reiter's rules for scenario B correct; Rubin's rules overcover ($100\%$). 
+3. Scenario C: Reiter's rules undercover, Rubin's rules overcover. For both: ($???\%$).
+
+---
+
+
