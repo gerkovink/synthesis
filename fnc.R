@@ -1,5 +1,5 @@
 library(ggplot2)
-library(rlang)
+
 
 #' Create a plot based on synthetic datasets
 #'
@@ -9,7 +9,7 @@ library(rlang)
 #'
 #' @return a ggplot object
 
-synplot <- function(syn.obj, lm.formula){
+synplot1 <- function(syn.obj, lm.formula){
   vars <- all.vars(lm.formula)
   # row-bind all dfs
   dplyr::bind_rows(!!!syn.obj, .id="id") %>% 
@@ -22,37 +22,31 @@ synplot <- function(syn.obj, lm.formula){
 }
 
 
-pred <- make.predictorMatrix(boys)
-meth <- make.method(boys)
-pred[c("hgt", "wgt"), "bmi"] <- 0
-meth["bmi"] <- "~ I(wgt/(hgt/100)^2)"
-imp <- mice(boys, 
-            m=1, 
-            maxit = 10,
-            pred = pred, 
-            meth = meth, 
-            print = FALSE)
-truth <- complete(imp)
 
-syn <- mice(truth, 
-            meth = "cart", 
-            m = 5, 
-            maxit = 1, 
-            print = FALSE,
-            where = matrix(TRUE, nrow(truth), ncol(truth)))
 
-model <- complete(syn, "all") %>% map(~.x %$% lm(age ~ bmi + hc))
+#' Create a plot of fitted values vs. observed values
+#'
+#' @param model.list a list of fitted model objects
+#' @param smoother a smoothing method to use (default = "lm")
+#'
+#'
+#' @return a ggplot object
 
-synplot <- function(model.list, smoother = "lm"){
-  fit <- model.list[[1]]
-  form <- formula(fit)
-  vars <- form %>% all.vars()
-  # row-bind all dfs
-  mice::complete(mids, "long") %>% 
-    # suppose lm.formula contains one predictor x
-    ggplot(aes(x = fit$fitted.values, 
-               y = vars[1], 
-               color= .imp)) +
+synplot2 <- function(model.list, smoother = "lm"){
+  # get the model formula
+  form <- formula(model.list[[1]])
+  model.list %>% 
+    purrr::map(
+      ~.x[c("fitted.values", "model")] %>% 
+        dplyr::bind_cols() %>% 
+        # select fitted.values & DV which are the 1st and 2nd vars
+        dplyr::select(1:2)
+    ) %>% 
+    dplyr::bind_rows(.id = "id") %>% 
+    ggplot(aes(x = fitted.values, 
+               # grab the dependent variable and unquote it
+               y = !!rlang::sym(all.vars(form)[1]), 
+               color= id)) +
     geom_point(size = 1, alpha = 0.2) +
     geom_line(stat = "smooth", 
               method = smoother, 
@@ -61,10 +55,3 @@ synplot <- function(model.list, smoother = "lm"){
     theme_classic() +
     labs(title = paste("Line for", deparse(form)), color="")
 }
-
-A <- model %>% map(~.x[c("fitted.values", "model")] %>% 
-                do.call("cbind", .) %>% 
-                select(c(1,2))) %>% 
-  do.call("rbind", .) %>% 
-  mutate(imp = rep(1:length(model), rep(dim(.)[[1]]/length(model), length(model))))
-

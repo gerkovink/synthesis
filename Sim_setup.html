@@ -116,6 +116,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#fit-models" id="toc-fit-models" class="nav-link" data-scroll-target="#fit-models">Fit models</a></li>
   <li><a href="#predicted-vs.-original" id="toc-predicted-vs.-original" class="nav-link" data-scroll-target="#predicted-vs.-original">Predicted vs.&nbsp;Original</a></li>
   <li><a href="#lm-plots" id="toc-lm-plots" class="nav-link" data-scroll-target="#lm-plots">LM plots</a></li>
+  <li><a href="#fitted-vs-observed-plots" id="toc-fitted-vs-observed-plots" class="nav-link" data-scroll-target="#fitted-vs-observed-plots">Fitted vs Observed plots</a></li>
   <li><a href="#rmse" id="toc-rmse" class="nav-link" data-scroll-target="#rmse">RMSE</a></li>
   </ul>
 </nav>
@@ -563,15 +564,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"fnc.R"</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># example plot 1</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">synplot</span>(full, bmi<span class="sc">~</span>age)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">synplot1</span>(full, bmi<span class="sc">~</span>age)</span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># example plot 2</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">synplot</span>(full, age <span class="sc">~</span> hgt)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">synplot1</span>(full, age <span class="sc">~</span> hgt)</span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># example plot 3</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">synplot</span>(full, age <span class="sc">~</span> hc)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">synplot1</span>(full, age <span class="sc">~</span> hc)</span>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># example plot 4</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">synplot</span>(syn, age <span class="sc">~</span> wgt)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">synplot1</span>(syn, age <span class="sc">~</span> wgt)</span>
 <span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co"># example plot 5</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="fu">synplot</span>(<span class="fu">list</span>(full<span class="sc">$</span>syn1, full<span class="sc">$</span>syn3, full<span class="sc">$</span>truth), bmi <span class="sc">~</span> age)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="fu">synplot1</span>(<span class="fu">list</span>(full<span class="sc">$</span>syn1, full<span class="sc">$</span>syn3, full<span class="sc">$</span>truth), bmi <span class="sc">~</span> age)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -616,17 +617,72 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </div>
+</section>
+<section id="fitted-vs-observed-plots" class="level1">
+<h1>Fitted vs Observed plots</h1>
+<div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># example plot 1</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>full <span class="sc">%&gt;%</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(age <span class="sc">~</span> bmi <span class="sc">+</span> hc)) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">synplot2</span>()</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># example plot 2</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>full <span class="sc">%&gt;%</span> </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(bmi<span class="sc">~</span> age <span class="sc">+</span> hc)) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">synplot2</span>(<span class="at">smoother =</span> <span class="st">"loess"</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># example plot 3</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>full <span class="sc">%&gt;%</span> </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(age <span class="sc">~</span> wgt <span class="sc">+</span> hc)) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">synplot2</span>(<span class="at">smoother =</span> <span class="st">"loess"</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co"># example plot 4</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>full <span class="sc">%&gt;%</span> </span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(age <span class="sc">~</span> hgt <span class="sc">+</span> hc)) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">synplot2</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Sim_setup_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="528"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Sim_setup_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid figure-img" width="528"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Sim_setup_files/figure-html/unnamed-chunk-11-3.png" class="img-fluid figure-img" width="528"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Sim_setup_files/figure-html/unnamed-chunk-11-4.png" class="img-fluid figure-img" width="528"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
 <hr>
 </section>
 <section id="rmse" class="level1">
 <h1>RMSE</h1>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> res <span class="sc">%&gt;%</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">apply</span>(<span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">data.frame</span>(<span class="at">predicted =</span> <span class="fu">unlist</span>(x<span class="sc">$</span>predicted), <span class="at">original =</span> <span class="fu">unlist</span>(x<span class="sc">$</span>original))) <span class="sc">%&gt;%</span> </span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((.x<span class="sc">$</span>predicted <span class="sc">-</span> .x<span class="sc">$</span>original)<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">%&gt;%</span> <span class="fu">unlist</span>()</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>rmse <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names=</span><span class="st">"RMSE"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> res <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">apply</span>(<span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">data.frame</span>(<span class="at">predicted =</span> <span class="fu">unlist</span>(x<span class="sc">$</span>predicted), <span class="at">original =</span> <span class="fu">unlist</span>(x<span class="sc">$</span>original))) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((.x<span class="sc">$</span>predicted <span class="sc">-</span> .x<span class="sc">$</span>original)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">%&gt;%</span> <span class="fu">unlist</span>()</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>rmse <span class="sc">%&gt;%</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names=</span><span class="st">"RMSE"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <thead>
@@ -761,7 +817,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.2.2 (2022-10-31)
 Platform: aarch64-apple-darwin20 (64-bit)
@@ -778,23 +834,24 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] rlang_1.0.6    ggplot2_3.4.0  furrr_0.3.1    future_1.31.0  purrr_1.0.1   
-[6] magrittr_2.0.3 ggmice_0.0.1   dplyr_1.1.0    mice_3.15.0   
+[1] ggplot2_3.4.0  furrr_0.3.1    future_1.31.0  purrr_1.0.1    magrittr_2.0.3
+[6] ggmice_0.0.1   dplyr_1.1.0    mice_3.15.0   
 
 loaded via a namespace (and not attached):
  [1] tidyselect_1.2.0  xfun_0.37         listenv_0.9.0     splines_4.2.2    
  [5] lattice_0.20-45   colorspace_2.1-0  vctrs_0.5.2       generics_0.1.3   
  [9] htmltools_0.5.4   yaml_2.3.7        mgcv_1.8-41       utf8_1.2.3       
-[13] pillar_1.8.1      glue_1.6.2        withr_2.5.0       lifecycle_1.0.3  
-[17] stringr_1.5.0     munsell_0.5.0     gtable_0.3.1      htmlwidgets_1.6.1
-[21] codetools_0.2-19  evaluate_0.20     labeling_0.4.2    knitr_1.42       
-[25] fastmap_1.1.0     parallel_4.2.2    fansi_1.0.4       broom_1.0.3      
-[29] Rcpp_1.0.10       backports_1.4.1   scales_1.2.1      jsonlite_1.8.4   
-[33] farver_2.1.1      parallelly_1.34.0 digest_0.6.31     stringi_1.7.12   
-[37] grid_4.2.2        cli_3.6.0         tools_4.2.2       tibble_3.1.8     
-[41] tidyr_1.3.0       pkgconfig_2.0.3   Matrix_1.5-3      MASS_7.3-58.2    
-[45] rmarkdown_2.20    rstudioapi_0.14   R6_2.5.1          globals_0.16.2   
-[49] rpart_4.1.19      nlme_3.1-162      nnet_7.3-18       compiler_4.2.2   </code></pre>
+[13] rlang_1.0.6       pillar_1.8.1      glue_1.6.2        withr_2.5.0      
+[17] lifecycle_1.0.3   stringr_1.5.0     munsell_0.5.0     gtable_0.3.1     
+[21] htmlwidgets_1.6.1 codetools_0.2-19  evaluate_0.20     labeling_0.4.2   
+[25] knitr_1.42        fastmap_1.1.0     parallel_4.2.2    fansi_1.0.4      
+[29] broom_1.0.3       Rcpp_1.0.10       backports_1.4.1   scales_1.2.1     
+[33] jsonlite_1.8.4    farver_2.1.1      parallelly_1.34.0 digest_0.6.31    
+[37] stringi_1.7.12    grid_4.2.2        cli_3.6.0         tools_4.2.2      
+[41] tibble_3.1.8      tidyr_1.3.0       pkgconfig_2.0.3   Matrix_1.5-3     
+[45] MASS_7.3-58.2     rmarkdown_2.20    rstudioapi_0.14   R6_2.5.1         
+[49] globals_0.16.2    rpart_4.1.19      nlme_3.1-162      nnet_7.3-18      
+[53] compiler_4.2.2   </code></pre>
 </div>
 </div>
 </section>
