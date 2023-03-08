@@ -219,25 +219,54 @@ plots1[stringr::str_detect(names(plots1), "syn 5")]
 #| fig.width: 5.5
 #| layout-ncol: 2
 
-
 # source the plotting function
 source("fnc.R")
 
 # example plot 1
-synplot(full, bmi~age)
+synplot1(full, bmi~age)
 
 # example plot 2
-synplot(full, age ~ hgt)
+synplot1(full, age ~ hgt)
 
 # example plot 3
-synplot(full, age ~ hc)
+synplot1(full, age ~ hc)
 
 # example plot 4
-synplot(syn, age ~ wgt)
+synplot1(syn, age ~ wgt)
 
 # example plot 5
-synplot(list(full$syn1, full$syn3, full$truth), bmi ~ age)
+synplot1(list(full$syn1, full$syn3, full$truth), bmi ~ age)
 ```
+
+
+# Fitted vs Observed plots
+```{r}
+#| fig.align: center
+#| fig.width: 5.5
+#| layout-ncol: 2
+
+
+# example plot 1
+full %>% 
+  map(~.x %$% lm(age ~ bmi + hc)) %>% 
+  synplot2()
+
+# example plot 2
+full %>% 
+  map(~.x %$% lm(bmi~ age + hc)) %>% 
+  synplot2(smoother = "loess")
+
+# example plot 3
+full %>% 
+  map(~.x %$% lm(age ~ wgt + hc)) %>% 
+  synplot2(smoother = "loess")
+
+# example plot 4
+full %>% 
+  map(~.x %$% lm(age ~ hgt + hc)) %>% 
+  synplot2()
+```
+
 
 ---
 
