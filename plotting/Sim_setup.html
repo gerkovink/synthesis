@@ -118,6 +118,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#lm-plots" id="toc-lm-plots" class="nav-link" data-scroll-target="#lm-plots">LM plots</a></li>
   <li><a href="#fitted-vs-observed-plots" id="toc-fitted-vs-observed-plots" class="nav-link" data-scroll-target="#fitted-vs-observed-plots">Fitted vs Observed plots</a></li>
   <li><a href="#rmse" id="toc-rmse" class="nav-link" data-scroll-target="#rmse">RMSE</a></li>
+  <li><a href="#bad-model" id="toc-bad-model" class="nav-link" data-scroll-target="#bad-model">Bad model</a></li>
   </ul>
 </nav>
 </div>
@@ -200,8 +201,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">m =</span> <span class="dv">5</span>, </span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">maxit =</span> <span class="dv">1</span>, </span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">print =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">where =</span> <span class="fu">matrix</span>(<span class="cn">TRUE</span>, <span class="fu">nrow</span>(truth), <span class="fu">ncol</span>(truth))) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">complete</span>(<span class="st">"all"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">cp =</span> <span class="fl">1e-12</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">minbucket =</span> <span class="dv">2</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">where =</span> <span class="fu">matrix</span>(<span class="cn">TRUE</span>, <span class="fu">nrow</span>(truth), <span class="fu">ncol</span>(truth))) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">complete</span>(<span class="st">"all"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <hr>
 </section>
@@ -694,134 +697,266 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">syn 1 - predicted: syn1</td>
-<td style="text-align: right;">2.008907</td>
+<td style="text-align: right;">2.038176</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 1 - predicted: syn2</td>
-<td style="text-align: right;">1.986720</td>
+<td style="text-align: right;">2.065616</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 1 - predicted: syn3</td>
-<td style="text-align: right;">2.028691</td>
+<td style="text-align: right;">2.072814</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 1 - predicted: syn4</td>
-<td style="text-align: right;">2.025933</td>
+<td style="text-align: right;">2.068570</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 1 - predicted: syn5</td>
-<td style="text-align: right;">2.083531</td>
+<td style="text-align: right;">2.034256</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 1 - predicted: truth</td>
-<td style="text-align: right;">2.057735</td>
+<td style="text-align: right;">2.053549</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 2 - predicted: syn1</td>
-<td style="text-align: right;">2.012995</td>
+<td style="text-align: right;">2.042257</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 2 - predicted: syn2</td>
-<td style="text-align: right;">1.982348</td>
+<td style="text-align: right;">2.061821</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 2 - predicted: syn3</td>
-<td style="text-align: right;">2.033170</td>
+<td style="text-align: right;">2.070789</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 2 - predicted: syn4</td>
-<td style="text-align: right;">2.026513</td>
+<td style="text-align: right;">2.066730</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 2 - predicted: syn5</td>
-<td style="text-align: right;">2.078518</td>
+<td style="text-align: right;">2.033899</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 2 - predicted: truth</td>
-<td style="text-align: right;">2.065021</td>
+<td style="text-align: right;">2.052405</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 3 - predicted: syn1</td>
-<td style="text-align: right;">2.010499</td>
+<td style="text-align: right;">2.040701</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 3 - predicted: syn2</td>
-<td style="text-align: right;">1.988632</td>
+<td style="text-align: right;">2.062164</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 3 - predicted: syn3</td>
-<td style="text-align: right;">2.026951</td>
+<td style="text-align: right;">2.070447</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 3 - predicted: syn4</td>
-<td style="text-align: right;">2.031029</td>
+<td style="text-align: right;">2.066559</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 3 - predicted: syn5</td>
-<td style="text-align: right;">2.083731</td>
+<td style="text-align: right;">2.033129</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 3 - predicted: truth</td>
-<td style="text-align: right;">2.062000</td>
+<td style="text-align: right;">2.052060</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 4 - predicted: syn1</td>
-<td style="text-align: right;">2.013040</td>
+<td style="text-align: right;">2.041207</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 4 - predicted: syn2</td>
-<td style="text-align: right;">1.987239</td>
+<td style="text-align: right;">2.062901</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 4 - predicted: syn3</td>
-<td style="text-align: right;">2.036790</td>
+<td style="text-align: right;">2.071346</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 4 - predicted: syn4</td>
-<td style="text-align: right;">2.021892</td>
+<td style="text-align: right;">2.065695</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 4 - predicted: syn5</td>
-<td style="text-align: right;">2.083382</td>
+<td style="text-align: right;">2.031449</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 4 - predicted: truth</td>
-<td style="text-align: right;">2.058596</td>
+<td style="text-align: right;">2.053425</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 5 - predicted: syn1</td>
-<td style="text-align: right;">2.015915</td>
+<td style="text-align: right;">2.042038</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 5 - predicted: syn2</td>
-<td style="text-align: right;">1.984572</td>
+<td style="text-align: right;">2.064997</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 5 - predicted: syn3</td>
-<td style="text-align: right;">2.033939</td>
+<td style="text-align: right;">2.072949</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 5 - predicted: syn4</td>
-<td style="text-align: right;">2.028438</td>
+<td style="text-align: right;">2.066681</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">syn 5 - predicted: syn5</td>
-<td style="text-align: right;">2.076503</td>
+<td style="text-align: right;">2.030366</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">syn 5 - predicted: truth</td>
-<td style="text-align: right;">2.070594</td>
+<td style="text-align: right;">2.055370</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
+</section>
+<section id="bad-model" class="level1">
+<h1>Bad model</h1>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>truth2 <span class="ot">&lt;-</span> <span class="fu">mice</span>(mammalsleep) <span class="sc">%&gt;%</span> <span class="fu">complete</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ iter imp variable
+  1   1  sws*  ps*  ts*  mls*  gt*
+  1   2  sws*  ps*  ts*  mls*  gt*
+  1   3  sws*  ps*  ts*  mls*  gt*
+  1   4  sws*  ps*  ts*  mls*  gt*
+  1   5  sws*  ps*  ts*  mls*  gt*
+  2   1  sws*  ps*  ts*  mls*  gt*
+  2   2  sws*  ps*  ts*  mls*  gt*
+  2   3  sws*  ps*  ts*  mls*  gt*
+  2   4  sws*  ps*  ts*  mls*  gt*
+  2   5  sws*  ps*  ts*  mls*  gt*
+  3   1  sws*  ps*  ts*  mls*  gt*
+  3   2  sws*  ps*  ts*  mls*  gt*
+  3   3  sws*  ps*  ts*  mls*  gt*
+  3   4  sws*  ps*  ts*  mls*  gt*
+  3   5  sws*  ps*  ts*  mls*  gt*
+  4   1  sws*  ps*  ts*  mls*  gt*
+  4   2  sws*  ps*  ts*  mls*  gt*
+  4   3  sws*  ps*  ts*  mls*  gt*
+  4   4  sws*  ps*  ts*  mls*  gt*
+  4   5  sws*  ps*  ts*  mls*  gt*
+  5   1  sws*  ps*  ts*  mls*  gt*
+  5   2  sws*  ps*  ts*  mls*  gt*
+  5   3  sws*  ps*  ts*  mls*  gt*
+  5   4  sws*  ps*  ts*  mls*  gt*
+  5   5  sws*  ps*  ts*  mls*  gt*</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>syn2 <span class="ot">&lt;-</span> <span class="fu">mice</span>(truth2, </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">meth =</span> <span class="st">"cart"</span>, </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">m =</span> <span class="dv">5</span>, </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">maxit =</span> <span class="dv">1</span>, </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">print =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">cp =</span> <span class="fl">1e-12</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">minbucket =</span> <span class="dv">2</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">where =</span> <span class="fu">matrix</span>(<span class="cn">TRUE</span>, </span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">nrow</span>(truth2),</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">ncol</span>(truth2))) <span class="sc">%&gt;%</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">complete</span>(<span class="st">"all"</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>full2 <span class="ot">&lt;-</span> syn2 <span class="sc">%&gt;%</span> </span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">append</span>(<span class="fu">list</span>(truth2)) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setNames</span>(<span class="fu">c</span>(<span class="fu">paste0</span>(<span class="st">"syn"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="st">"truth"</span>))</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>full2 <span class="sc">%&gt;%</span> </span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(sws <span class="sc">~</span> <span class="fu">log10</span>(bw) <span class="sc">+</span> odi)) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">synplot2</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Sim_setup_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">124</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>imp <span class="ot">&lt;-</span> mammalsleep <span class="sc">%&gt;%</span> <span class="fu">mice</span>(<span class="at">print=</span><span class="cn">FALSE</span>) </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>imp <span class="sc">%&gt;%</span> <span class="fu">complete</span>(<span class="st">"all"</span>) <span class="sc">%&gt;%</span> <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(sws <span class="sc">~</span> <span class="fu">log10</span>(bw) <span class="sc">+</span> odi)) <span class="sc">%&gt;%</span> <span class="fu">pool</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Class: mipo    m = 5 
+         term m  estimate       ubar           b          t dfcom        df
+1 (Intercept) 5 10.239792 0.66474009 0.740089805 1.55284786    59  8.150818
+2   log10(bw) 5 -1.421031 0.09384099 0.149983546 0.27382125    59  6.284848
+3         odi 5 -0.544869 0.08311143 0.005934304 0.09023259    59 48.610074
+         riv    lambda       fmi
+1 1.33602257 0.5719219 0.6487016
+2 1.91792790 0.6572911 0.7311122
+3 0.08568214 0.0789201 0.1146139</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">synplot2</span>({<span class="fu">complete</span>(imp, <span class="st">"all"</span>) <span class="sc">%&gt;%</span> <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(sws <span class="sc">~</span> <span class="fu">log10</span>(bw) <span class="sc">+</span> odi))}, <span class="at">smoother =</span> <span class="st">"lm"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>imp <span class="ot">&lt;-</span> mammalsleep <span class="sc">%&gt;%</span> <span class="fu">mice</span>(<span class="at">print=</span><span class="cn">FALSE</span>) </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>imp <span class="sc">%&gt;%</span> <span class="fu">complete</span>(<span class="st">"all"</span>) <span class="sc">%&gt;%</span> <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(sws <span class="sc">~</span> <span class="fu">log10</span>(bw) <span class="sc">+</span> odi)) <span class="sc">%&gt;%</span> <span class="fu">pool</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Class: mipo    m = 5 
+         term m   estimate       ubar            b          t dfcom       df
+1 (Intercept) 5  9.6751597 0.69063124 1.628135e-03 0.69258500    59 56.92926
+2   log10(bw) 5 -1.7076386 0.09749603 6.774324e-04 0.09830895    59 56.56988
+3         odi 5 -0.5082681 0.08634856 6.210027e-05 0.08642308    59 57.04694
+           riv       lambda        fmi
+1 0.0028289517 0.0028209713 0.03609951
+2 0.0083379691 0.0082690222 0.04156541
+3 0.0008630176 0.0008622734 0.03414083</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>plot2 <span class="ot">&lt;-</span> <span class="fu">synplot2</span>({<span class="fu">complete</span>(imp, <span class="st">"all"</span>) <span class="sc">%&gt;%</span> <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(sws <span class="sc">~</span> <span class="fu">log10</span>(bw) <span class="sc">+</span> odi))}, <span class="at">smoother =</span> <span class="st">"lm"</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>plot1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Sim_setup_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>plot2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Sim_setup_files/figure-html/unnamed-chunk-13-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>imp <span class="ot">&lt;-</span> mammalsleep <span class="sc">%&gt;%</span> <span class="fu">mice</span>(<span class="at">print=</span><span class="cn">FALSE</span>, <span class="at">meth =</span> <span class="st">"mean"</span>) </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>imp <span class="sc">%&gt;%</span> <span class="fu">complete</span>(<span class="st">"all"</span>) <span class="sc">%&gt;%</span> <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(sws <span class="sc">~</span> <span class="fu">log10</span>(bw) <span class="sc">+</span> odi)) <span class="sc">%&gt;%</span> <span class="fu">pool</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Class: mipo    m = 5 
+         term m   estimate       ubar b          t dfcom       df riv lambda
+1 (Intercept) 5 10.8197259 0.52232695 0 0.52232695    59 57.09106   0      0
+2   log10(bw) 5 -0.9562642 0.07373661 0 0.07373661    59 57.09106   0      0
+3         odi 5 -0.6090271 0.06530573 0 0.06530573    59 57.09106   0      0
+         fmi
+1 0.03328282
+2 0.03328282
+3 0.03328282</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>plot3 <span class="ot">&lt;-</span> <span class="fu">synplot2</span>({<span class="fu">complete</span>(imp, <span class="st">"all"</span>) <span class="sc">%&gt;%</span> <span class="fu">map</span>(<span class="sc">~</span>.x <span class="sc">%$%</span> <span class="fu">lm</span>(sws <span class="sc">~</span> <span class="fu">log10</span>(bw) <span class="sc">+</span> odi))}, <span class="at">smoother =</span> <span class="st">"lm"</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>plot3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Sim_setup_files/figure-html/unnamed-chunk-13-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.2.2 (2022-10-31)
 Platform: aarch64-apple-darwin20 (64-bit)
-Running under: macOS Ventura 13.0
+Running under: macOS Ventura 13.1
 
 Matrix products: default
 BLAS:   /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRblas.0.dylib
@@ -834,24 +969,25 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] ggplot2_3.4.0  furrr_0.3.1    future_1.31.0  purrr_1.0.1    magrittr_2.0.3
-[6] ggmice_0.0.1   dplyr_1.1.0    mice_3.15.0   
+[1] ggplot2_3.4.0     furrr_0.3.0       future_1.29.0     purrr_0.3.5      
+[5] magrittr_2.0.3    ggmice_0.0.1.9000 dplyr_1.0.10      mice_3.15.0      
 
 loaded via a namespace (and not attached):
- [1] tidyselect_1.2.0  xfun_0.37         listenv_0.9.0     splines_4.2.2    
- [5] lattice_0.20-45   colorspace_2.1-0  vctrs_0.5.2       generics_0.1.3   
- [9] htmltools_0.5.4   yaml_2.3.7        mgcv_1.8-41       utf8_1.2.3       
+ [1] tidyselect_1.2.0  xfun_0.31         listenv_0.8.0     splines_4.2.2    
+ [5] lattice_0.20-45   colorspace_2.0-3  vctrs_0.5.1       generics_0.1.3   
+ [9] htmltools_0.5.4   mgcv_1.8-41       yaml_2.3.5        utf8_1.2.2       
 [13] rlang_1.0.6       pillar_1.8.1      glue_1.6.2        withr_2.5.0      
-[17] lifecycle_1.0.3   stringr_1.5.0     munsell_0.5.0     gtable_0.3.1     
-[21] htmlwidgets_1.6.1 codetools_0.2-19  evaluate_0.20     labeling_0.4.2   
-[25] knitr_1.42        fastmap_1.1.0     parallel_4.2.2    fansi_1.0.4      
-[29] broom_1.0.3       Rcpp_1.0.10       backports_1.4.1   scales_1.2.1     
-[33] jsonlite_1.8.4    farver_2.1.1      parallelly_1.34.0 digest_0.6.31    
-[37] stringi_1.7.12    grid_4.2.2        cli_3.6.0         tools_4.2.2      
-[41] tibble_3.1.8      tidyr_1.3.0       pkgconfig_2.0.3   Matrix_1.5-3     
-[45] MASS_7.3-58.2     rmarkdown_2.20    rstudioapi_0.14   R6_2.5.1         
-[49] globals_0.16.2    rpart_4.1.19      nlme_3.1-162      nnet_7.3-18      
-[53] compiler_4.2.2   </code></pre>
+[17] DBI_1.1.2         lifecycle_1.0.3   stringr_1.5.0     munsell_0.5.0    
+[21] gtable_0.3.1      htmlwidgets_1.5.4 codetools_0.2-18  evaluate_0.15    
+[25] labeling_0.4.2    knitr_1.39        fastmap_1.1.0     parallel_4.2.2   
+[29] fansi_1.0.3       highr_0.9         broom_1.0.1       Rcpp_1.0.9       
+[33] backports_1.4.1   scales_1.2.1      jsonlite_1.8.4    farver_2.1.1     
+[37] parallelly_1.32.1 digest_0.6.31     stringi_1.7.8     grid_4.2.2       
+[41] cli_3.4.1         tools_4.2.2       tibble_3.1.8      tidyr_1.2.1      
+[45] pkgconfig_2.0.3   Matrix_1.5-1      MASS_7.3-58.1     ellipsis_0.3.2   
+[49] assertthat_0.2.1  rmarkdown_2.14    rstudioapi_0.13   R6_2.5.1         
+[53] globals_0.16.2    rpart_4.1.19      nlme_3.1-160      nnet_7.3-18      
+[57] compiler_4.2.2   </code></pre>
 </div>
 </div>
 </section>

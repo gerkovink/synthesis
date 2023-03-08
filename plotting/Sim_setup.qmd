@@ -84,6 +84,8 @@ syn <- mice(truth,
             m = 5, 
             maxit = 1, 
             print = FALSE,
+            cp = 1e-12,
+            minbucket = 2,
             where = matrix(TRUE, nrow(truth), ncol(truth))) %>% 
   complete("all")
 ```
@@ -280,6 +282,49 @@ rmse <- res %>%
 
 rmse %>% knitr::kable(col.names="RMSE") 
 
+```
+
+# Bad model
+```{r}
+truth2 <- mice(mammalsleep) %>% complete(1)
+syn2 <- mice(truth2, 
+            meth = "cart", 
+            m = 5, 
+            maxit = 1, 
+            print = FALSE,
+            cp = 1e-12,
+            minbucket = 2,
+            where = matrix(TRUE, 
+                           nrow(truth2),
+                           ncol(truth2))) %>%
+  complete("all")
+
+full2 <- syn2 %>% 
+  append(list(truth2)) %>% 
+  setNames(c(paste0("syn", 1:5), "truth"))
+
+full2 %>% 
+  map(~.x %$% lm(sws ~ log10(bw) + odi)) %>% 
+  synplot2()
+
+set.seed(124)
+imp <- mammalsleep %>% mice(print=FALSE) 
+
+imp %>% complete("all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi)) %>% pool()
+plot1 <- synplot2({complete(imp, "all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi))}, smoother = "lm")
+
+set.seed(123)
+imp <- mammalsleep %>% mice(print=FALSE) 
+
+imp %>% complete("all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi)) %>% pool()
+plot2 <- synplot2({complete(imp, "all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi))}, smoother = "lm")
+plot1
+plot2
+
+imp <- mammalsleep %>% mice(print=FALSE, meth = "mean") 
+imp %>% complete("all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi)) %>% pool()
+plot3 <- synplot2({complete(imp, "all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi))}, smoother = "lm")
+plot3
 ```
 
 
