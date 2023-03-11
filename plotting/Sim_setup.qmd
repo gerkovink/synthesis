@@ -31,6 +31,7 @@ library(magrittr)
 library(purrr)
 library(furrr)
 library(ggplot2)
+library(plotly)
 
 set.seed(123)
 ```
@@ -245,28 +246,35 @@ synplot1(list(full$syn1, full$syn3, full$truth), bmi ~ age)
 #| fig.width: 5.5
 #| layout-ncol: 2
 
-
 # example plot 1
 full %>% 
   map(~.x %$% lm(age ~ bmi + hc)) %>% 
-  synplot2()
+  synplot2 
 
 # example plot 2
 full %>% 
   map(~.x %$% lm(bmi~ age + hc)) %>% 
-  synplot2(smoother = "loess")
+  synplot2(smoother = "loess") 
 
 # example plot 3
 full %>% 
   map(~.x %$% lm(age ~ wgt + hc)) %>% 
-  synplot2(smoother = "loess")
+  synplot2(smoother = "loess") 
 
 # example plot 4
 full %>% 
   map(~.x %$% lm(age ~ hgt + hc)) %>% 
-  synplot2()
+  synplot2
+
 ```
 
+## Plotly
+```{r}
+full %>% 
+  map(~.x %$% lm(bmi~ age + hc)) %>% 
+  synplot2(smoother = "loess") %>% ggplotly
+
+```
 
 ---
 
