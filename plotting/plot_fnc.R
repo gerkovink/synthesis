@@ -48,71 +48,20 @@ synplot2 <- function(model.list, smoother = "lm"){
     dplyr::mutate(MSEs = mean(residuals^2), 
                   ids = glue::glue('{ids}, MSE= {round(MSEs, 2)}')) %>%
     dplyr::ungroup() %>% 
-    {
-    ggplot(., aes(x = fitted.values, 
-               # grab the dependent variable and unquote it
-               y = !!rlang::sym(all.vars(form)[1]), 
-               color= ids)) +
-    geom_point(size = 1, alpha = 0.2) +
-    geom_line(stat = "smooth", 
-              method = smoother, 
-              alpha = 0.5, 
-              position = position_dodge(width = 1)) +
-    theme_classic() +
+    {   # grab the dependent variable and unquote it
+      ggplot(., aes(x = fitted.values,
+                    y = !!rlang::sym(all.vars(form)[1]), 
+                    
+                    color= ids)) +
+        geom_point(size = 1, alpha = 0.2) +
+        geom_line(stat = "smooth", 
+                  method = smoother, 
+                  alpha = 0.5, 
+                  #position = position_dodge(width = 1)
+        ) +
+        theme_classic() +
         labs(title = paste(smoother, "line for", deparse(form)), color="",
              subtitle = paste("Average MSE =", round(mean(.$residuals^2),2))) 
     }
 }
 
-
-
-# 
-# model <- lm(bmi~ age + hc, data=boys)
-# # get the model formula
-# form <- formula(model)
-# 
-# full %>% 
-#   map(~.x %$% lm(bmi~ age + hc)) %>% 
-#   purrr::map(
-#     ~.x[c("fitted.values", "model", "residuals")] %>% 
-#       dplyr::bind_cols() %>% 
-#       # select fitted.values & DV which are the 1st and 2nd vars & residuals which is the last col
-#       dplyr::select(1:2, last_col())
-#   ) %>% 
-#   dplyr::bind_rows(.id = "id") %>% 
-#   dplyr::group_by(id) %>% 
-#   # compute MSE
-#   dplyr::mutate(MSEs = mean(residuals^2)) %>% 
-#   mutate(MSEs =mean(residuals^2)) %>% glue::glue_data('{unique(id)}, MSE= {unique(round(MSEs, 2))}')
-# 
-# 
-# 
-# full %>%
-#   map(~.x %$% lm(bmi~ age + hc)) %>%
-#   purrr::map(
-#     ~.x[c("fitted.values", "model", "residuals")] %>%
-#       dplyr::bind_cols() %>%
-#       # select fitted.values & DV which are the 1st and 2nd vars & residuals which is the last col
-#       dplyr::select(1:2, last_col())
-#   ) %>%
-#   dplyr::bind_rows(.id = "ids") %>%
-#   dplyr::group_by(ids) %>%
-#   # compute MSE
-#   dplyr::mutate(MSEs = mean(residuals^2),
-#                 ids = glue::glue('{ids}, MSE= {round(MSEs, 2)}')) %>%
-#   dplyr::ungroup() %>%
-#   #dplyr::mutate(overallMSE = mean(residuals^2)) %>% 
-#   {
-#   ggplot(., aes(x = fitted.values,
-#              # grab the dependent variable and unquote it
-#              y = !!rlang::sym(all.vars(form)[1]),
-#              color= ids)) +
-#   geom_point(size = 1, alpha = 0.2) +
-#   geom_line(stat = "smooth",
-#             method = "loess",
-#             alpha = 0.5,
-#             position = position_dodge(width = 1)) +
-#   theme_classic() +
-#   labs(title = paste("Line for", deparse(form)), color="",
-#        subtitle = paste("Average MSE =", round(mean(.$residuals^2),2))) 
-# }
