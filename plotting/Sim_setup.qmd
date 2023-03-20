@@ -221,10 +221,10 @@ plots1[stringr::str_detect(names(plots1), "syn 5")]
 #| layout-ncol: 2
 
 # source the plotting function
-source("fnc.R")
+source("plot_fnc.R")
 
 # example plot 1
-synplot1(full, bmi~age)
+synplot1(full, bmi ~ age)
 
 # example plot 2
 synplot1(full, age ~ hgt)
@@ -277,6 +277,67 @@ full %>%
 ```
 
 ---
+
+
+# Bad model
+```{r}
+truth2 <- mice(mammalsleep) %>% complete(1)
+syn2 <- mice(truth2, 
+            meth = "cart", 
+            m = 5, 
+            maxit = 1, 
+            print = FALSE,
+            cp = 1e-12,
+            minbucket = 2,
+            where = matrix(TRUE, 
+                           nrow(truth2),
+                           ncol(truth2))) %>%
+  complete("all")
+
+
+full2 <- syn2 %>% 
+  append(list(truth2)) %>% 
+  setNames(c(paste0("syn", 1:5), "truth"))
+
+
+full2 %>% 
+  map(~.x %$% lm(sws ~ log10(bw) + odi)) %>% 
+  synplot2()
+
+
+
+set.seed(124)
+imp <- mammalsleep %>% mice(print=FALSE) 
+imp %>% complete("all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi)) %>% pool()
+plot1 <- synplot2({complete(imp, "all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi))}, smoother = "lm")
+
+
+
+imp <- mammalsleep %>% mice(print=FALSE) 
+imp %>% complete("all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi)) %>% pool()
+plot2 <- synplot2({complete(imp, "all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi))}, smoother = "lm")
+plot1 
+plot2
+
+
+
+imp <- mammalsleep %>% mice(print=FALSE, meth = "mean") 
+imp %>% complete("all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi)) %>% pool()
+plot3 <- synplot2({complete(imp, "all") %>% map(~.x %$% lm(sws ~ log10(bw) + odi))}, smoother = "lm")
+plot3 
+
+## variance plots
+impplot1(mammalsleep, lm.formula = sws ~ log10(bw) + odi, print=TRUE)
+
+impplot1(mammalsleep, lm.formula = sws ~ log10(bw) + odi, seed=123)
+
+impplot1(mammalsleep, lm.formula = sws ~ log10(bw) + odi, seed=124)
+
+impplot1(mammalsleep, imp.method = "mean", lm.formula = sws ~ log10(bw) + odi, seed=124)
+
+```
+
+
 
 # RMSE
 

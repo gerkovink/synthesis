@@ -48,17 +48,18 @@ synplot2 <- function(model.list, smoother = "lm"){
     dplyr::mutate(MSEs = mean(residuals^2), 
                   ids = glue::glue('{ids}, MSE= {round(MSEs, 2)}')) %>%
     dplyr::ungroup() %>% 
-    {
-    ggplot(., aes(x = fitted.values, 
-               # grab the dependent variable and unquote it
-               y = !!rlang::sym(all.vars(form)[1]), 
-               color= ids)) +
-    geom_point(size = 1, alpha = 0.2) +
-    geom_line(stat = "smooth", 
-              method = smoother, 
-              alpha = 0.5, 
-              position = position_dodge(width = 1)) +
-    theme_classic() +
+    {   # grab the dependent variable and unquote it
+      ggplot(., aes(x = fitted.values,
+                    y = !!rlang::sym(all.vars(form)[1]), 
+                    
+                    color= ids)) +
+        geom_point(size = 1, alpha = 0.2) +
+        geom_line(stat = "smooth", 
+                  method = smoother, 
+                  alpha = 0.5, 
+                  #position = position_dodge(width = 1)
+        ) +
+        theme_classic() +
         labs(title = paste(smoother, "line for", deparse(form)), color="",
              subtitle = paste("Average MSE =", round(mean(.$residuals^2),2))) 
     }
@@ -66,53 +67,68 @@ synplot2 <- function(model.list, smoother = "lm"){
 
 
 
-# 
-# model <- lm(bmi~ age + hc, data=boys)
-# # get the model formula
-# form <- formula(model)
-# 
-# full %>% 
-#   map(~.x %$% lm(bmi~ age + hc)) %>% 
-#   purrr::map(
-#     ~.x[c("fitted.values", "model", "residuals")] %>% 
-#       dplyr::bind_cols() %>% 
-#       # select fitted.values & DV which are the 1st and 2nd vars & residuals which is the last col
-#       dplyr::select(1:2, last_col())
-#   ) %>% 
-#   dplyr::bind_rows(.id = "id") %>% 
-#   dplyr::group_by(id) %>% 
-#   # compute MSE
-#   dplyr::mutate(MSEs = mean(residuals^2)) %>% 
-#   mutate(MSEs =mean(residuals^2)) %>% glue::glue_data('{unique(id)}, MSE= {unique(round(MSEs, 2))}')
-# 
-# 
-# 
-# full %>%
-#   map(~.x %$% lm(bmi~ age + hc)) %>%
-#   purrr::map(
-#     ~.x[c("fitted.values", "model", "residuals")] %>%
-#       dplyr::bind_cols() %>%
-#       # select fitted.values & DV which are the 1st and 2nd vars & residuals which is the last col
-#       dplyr::select(1:2, last_col())
-#   ) %>%
-#   dplyr::bind_rows(.id = "ids") %>%
-#   dplyr::group_by(ids) %>%
-#   # compute MSE
-#   dplyr::mutate(MSEs = mean(residuals^2),
-#                 ids = glue::glue('{ids}, MSE= {round(MSEs, 2)}')) %>%
-#   dplyr::ungroup() %>%
-#   #dplyr::mutate(overallMSE = mean(residuals^2)) %>% 
-#   {
-#   ggplot(., aes(x = fitted.values,
-#              # grab the dependent variable and unquote it
-#              y = !!rlang::sym(all.vars(form)[1]),
-#              color= ids)) +
-#   geom_point(size = 1, alpha = 0.2) +
-#   geom_line(stat = "smooth",
-#             method = "loess",
-#             alpha = 0.5,
-#             position = position_dodge(width = 1)) +
-#   theme_classic() +
-#   labs(title = paste("Line for", deparse(form)), color="",
-#        subtitle = paste("Average MSE =", round(mean(.$residuals^2),2))) 
-# }
+library(magrittr)
+library(mice)
+
+#' Create a plot of average fitted values vs. observed values 
+#' to show the variance between fitted values for the imputed datasets
+#'
+#' @param dat original data
+#' @param imp.method imputation method (default = NULL)
+#' @param lm.formula linear model formula
+#' @param seed seed for mice (default = NA)
+#' @param print print the output table (default = FALSE)
+#'
+#' @return a ggplot object
+
+impplot1 <- function(dat, imp.method=NULL, lm.formula, seed=NA, print=FALSE){
+  # get the DV
+  dv <- all.vars(lm.formula)[1]
+  # imputing...
+  dat %>% mice::mice(print=FALSE, meth = imp.method, seed=seed) %>% complete("all") %>% 
+    # fit the model
+    purrr::map(~.x %$% do.call("lm", list(lm.formula, .)) %>% 
+                 # extract fitted vals
+                 .$fitted.values) %>% 
+    # gerko: dv --> observed value ? 
+    dplyr::bind_cols(., DV = dat[,dv]) %>%
+    dplyr::rowwise() %>%
+    # get the avg.fitted vals and variance (last col = observed val)
+    dplyr::mutate(means = mean(c_across(-DV)),
+           vars = var(c_across(-DV))
+    ) %>% 
+    ggplot(aes(x = means, y = DV, color = vars, size = vars)) + 
+    geom_point(alpha = 0.7)  +
+    # reverse the col order
+    scale_color_distiller(palette = "YlOrRd", trans="reverse") +
+    labs(x = "average fitted value", y = "observed DV", color = "variance") +
+    theme_classic() +
+    # flip the color bar
+    guides(size = FALSE, col = guide_colourbar(reverse=T)) 
+  #### Does gerko want MSE in this plot together?... :3 ????????
+  
+  # output table
+  #### shouldn't repeat this whole thing.!
+  #### also cut the table -- make it expandable.!
+  
+  # if(print==TRUE) {
+  #   # imputing...
+  #   dat %>% mice::mice(print=FALSE, meth = imp.method, seed=seed) %>% complete("all") %>% 
+  #     # fit the model
+  #     purrr::map(~.x %$% do.call("lm", list(lm.formula, .)) %>% 
+  #                  # extract fitted vals
+  #                  .$fitted.values) %>% 
+  #     # gerko: dv --> observed value ? 
+  #     dplyr::bind_cols(., DV = dat[,dv]) %>%
+  #     dplyr::rowwise() %>%
+  #     # get the avg.fitted vals and variance (last col = observed val)
+  #     dplyr::mutate(means = mean(c_across(-DV)),
+  #                   vars = var(c_across(-DV))
+  #     ) %>% knitr::kable()
+  # }
+    
+}
+
+
+
+
